@@ -44,7 +44,7 @@ func main() {
 		goto ERR
 	}
 
-	// 启动Api HTTP服务
+	// 启动 Api HTTP 服务
 	if err = master.InitApiServer(); err != nil {
 		goto ERR
 	}

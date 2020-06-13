@@ -2,11 +2,12 @@ package master
 
 import (
 	"encoding/json"
-	"go-crontab/source/crontab/common"
 	"net"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/zhenye-na/Cronitor/common"
 )
 
 // 任务的 http 接口
@@ -98,44 +99,6 @@ ERR:
 	}
 }
 
-/**
- * InitApiServer 初始化服务
- */
-func InitApiServer() (err error) {
-	var (
-		mux        *http.ServeMux
-		listener   net.Listener
-		httpServer *http.Server
-	)
-
-	// 配置路由
-	mux = http.NewServeMux()
-	mux.HandleFunc("/job/save", handleJobSave)
-	mux.HandleFunc("/job/delete", handleJobDelete)
-	mux.HandleFunc("/job/list", handleJobList)
-	mux.HandleFunc("/job/kill", handleJobKill)
-
-	// TCP listening
-	if listener, err = net.Listen("tcp", ":"+strconv.Itoa(G_config.ApiPort)); err != nil {
-		return
-	}
-
-	// HTTP service
-	httpServer = &http.Server{
-		ReadTimeout:  time.Duration(G_config.ApiReadTimeout) * time.Millisecond,
-		WriteTimeout: time.Duration(G_config.ApiWriteTimeout) * time.Millisecond,
-		Handler:      mux,
-	}
-
-	G_apiServer = &ApiServer{
-		httpServer: httpServer,
-	}
-
-	// start server
-	go httpServer.Serve(listener)
-
-}
-
 // 列举所有crontab任务
 func handleJobList(resp http.ResponseWriter, req *http.Request) {
 	var (
@@ -193,4 +156,49 @@ ERR:
 	if bytes, err = common.BuildResponse(-1, err.Error(), nil); err == nil {
 		resp.Write(bytes)
 	}
+}
+
+/**
+ * InitApiServer 初始化服务
+ */
+func InitApiServer() (err error) {
+	var (
+		mux           *http.ServeMux
+		listener      net.Listener
+		httpServer    *http.Server
+		staticDir     http.Dir     // 静态文件根目录
+		staticHandler http.Handler // 静态文件的 HTTP 回调
+	)
+
+	// 配置路由
+	mux = http.NewServeMux()
+	mux.HandleFunc("/job/save", handleJobSave)
+	mux.HandleFunc("/job/delete", handleJobDelete)
+	mux.HandleFunc("/job/list", handleJobList)
+	mux.HandleFunc("/job/kill", handleJobKill)
+
+	// 静态文件目录
+	staticDir = http.Dir(G_config.WebRoot)
+	staticHandler = http.FileServer(staticDir)
+	mux.Handle("/", http.StripPrefix("/", staticHandler)) //   ./webroot/index.html
+
+	// TCP listening
+	if listener, err = net.Listen("tcp", ":"+strconv.Itoa(G_config.ApiPort)); err != nil {
+		return
+	}
+
+	// HTTP service
+	httpServer = &http.Server{
+		ReadTimeout:  time.Duration(G_config.ApiReadTimeout) * time.Millisecond,
+		WriteTimeout: time.Duration(G_config.ApiWriteTimeout) * time.Millisecond,
+		Handler:      mux,
+	}
+
+	G_apiServer = &ApiServer{
+		httpServer: httpServer,
+	}
+
+	// start server
+	go httpServer.Serve(listener)
+
 }

@@ -7,7 +7,7 @@ import (
 
 	"github.com/coreos/etcd/clientv3"
 	"github.com/zhenye-na/Cronitor/common"
-	"go-crontab/thirdparty/github.com/coreos/etcd/mvcc/mvccpb"
+	"github.com/coreos/etcd/mvcc/mvccpb"
 )
 
 // 任务管理器
@@ -47,7 +47,7 @@ func InitJobMgr() (err error) {
 	lease = clientv3.NewLease(client)
 
 	// 赋值单例
-	G_jobMgr = &JobMgr{
+	G_jobMgr = &JobMgr {
 		client: client,
 		kv:     kv,
 		lease:  lease,
