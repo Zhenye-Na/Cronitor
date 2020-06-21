@@ -11,6 +11,7 @@ $(document).ready(function () {
       }
       return num;
     }
+
     var date = new Date(millsecond);
     var year = date.getFullYear();
     var month = paddingNum(date.getMonth() + 1, 2);
@@ -19,20 +20,9 @@ $(document).ready(function () {
     var minute = paddingNum(date.getMinutes(), 2);
     var second = paddingNum(date.getSeconds(), 2);
     var millsecond = paddingNum(date.getMilliseconds(), 3);
+
     return (
-      year +
-      "-" +
-      month +
-      "-" +
-      day +
-      " " +
-      hour +
-      ":" +
-      minute +
-      ":" +
-      second +
-      "." +
-      millsecond
+      year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second + "." + millsecond
     );
   }
 
@@ -118,7 +108,7 @@ $(document).ready(function () {
     // 获取任务名
     var jobName = $(this).parents("tr").children(".job-name").text();
 
-    // 请求/job/log接口
+    // 请求 `/job/log` 接口
     $.ajax({
       url: "/job/log",
       dataType: "json",
@@ -151,7 +141,7 @@ $(document).ready(function () {
 
   // 健康节点按钮
   $("#list-worker").on("click", function () {
-    // 清空现有table
+    // 清空现有 table
     $("#worker-list tbody").empty();
 
     // 拉取节点
@@ -164,7 +154,7 @@ $(document).ready(function () {
         }
 
         var workerList = resp.data;
-        // 遍历每个IP, 添加到模态框的table中
+        // 遍历每个 IP, 添加到模态框的 table 中
         for (var i = 0; i < workerList.length; ++i) {
           var workerIP = workerList[i];
           var tr = $("<tr>");
@@ -178,9 +168,9 @@ $(document).ready(function () {
     $("#worker-modal").modal("show");
   });
 
-  // 2. 定义一个函数，用于刷新任务列表
+  // 2. 定义一个函数, 用于刷新任务列表
   function rebuildJobList() {
-    // 请求 /job/list
+    // 请求 `/job/list`
     $.ajax({
       url: "/job/list",
       dataType: "json",
