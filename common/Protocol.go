@@ -83,7 +83,7 @@ type SortLogByStartTime struct {
 
 // 应答方法
 func BuildResponse(errno int, msg string, data interface{}) (resp []byte, err error) {
-	// 1, 定义一个 response
+	// 1. 定义一个 response
 	var (
 		response Response
 	)
@@ -92,7 +92,7 @@ func BuildResponse(errno int, msg string, data interface{}) (resp []byte, err er
 	response.Msg = msg
 	response.Data = data
 
-	// 2, 序列化 json
+	// 2. 序列化 json
 	resp, err = json.Marshal(response)
 	return
 }
@@ -112,7 +112,7 @@ func UnpackJob(value []byte) (ret *Job, err error) {
 }
 
 // 从 etcd 的 key 中提取任务名
-// /cron/jobs/job10 抹掉 /cron/jobs/
+// `/cron/jobs/job10` 抹掉 `/cron/jobs/`
 func ExtractJobName(jobKey string) string {
 	return strings.TrimPrefix(jobKey, JOB_SAVE_DIR)
 }
@@ -122,7 +122,7 @@ func ExtractKillerName(killerKey string) string {
 	return strings.TrimPrefix(killerKey, JOB_KILLER_DIR)
 }
 
-// 任务变化事件有2种: 1）更新任务 2）删除任务
+// 任务变化事件有 2 种: 1）更新任务 2）删除任务
 func BuildJobEvent(eventType int, job *Job) (jobEvent *JobEvent) {
 	return &JobEvent{
 		EventType: eventType,
@@ -147,7 +147,8 @@ func BuildJobSchedulePlan(job *Job) (jobSchedulePlan *JobSchedulePlan, err error
 		Expr:     expr,
 		NextTime: expr.Next(time.Now()),
 	}
-	return
+
+  return
 }
 
 // 构造执行状态信息
@@ -157,7 +158,8 @@ func BuildJobExecuteInfo(jobSchedulePlan *JobSchedulePlan) (jobExecuteInfo *JobE
 		PlanTime: jobSchedulePlan.NextTime, // 计算调度时间
 		RealTime: time.Now(),               // 真实调度时间
 	}
-	jobExecuteInfo.CancelCtx, jobExecuteInfo.CancelFunc = context.WithCancel(context.TODO())
+
+  jobExecuteInfo.CancelCtx, jobExecuteInfo.CancelFunc = context.WithCancel(context.TODO())
 	return
 }
 
